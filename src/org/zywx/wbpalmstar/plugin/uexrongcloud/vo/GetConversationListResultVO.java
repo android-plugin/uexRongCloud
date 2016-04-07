@@ -22,8 +22,6 @@ package org.zywx.wbpalmstar.plugin.uexrongcloud.vo;
 import java.io.Serializable;
 import java.util.List;
 
-import io.rong.imlib.model.Conversation;
-
 /**
  * Created by ylt on 16/3/30.
  */
@@ -32,7 +30,7 @@ public class GetConversationListResultVO implements Serializable {
 
     private int resultCode;//
 
-    private List<Conversation> conversations;
+    private List<ConversationVO> conversations;
 
     public int getResultCode() {
         return resultCode;
@@ -42,11 +40,11 @@ public class GetConversationListResultVO implements Serializable {
         this.resultCode = resultCode;
     }
 
-    public List<Conversation> getConversations() {
+    public List<ConversationVO> getConversations() {
         return conversations;
     }
 
-    public void setConversations(List<Conversation> conversations) {
+    public void setConversations(List<ConversationVO> conversations) {
         this.conversations = conversations;
     }
 }

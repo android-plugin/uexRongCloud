@@ -23,7 +23,6 @@ import java.io.Serializable;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
-import io.rong.imlib.model.MessageContent;
 
 /**
  * Created by ylt on 16/3/30.
@@ -38,7 +37,7 @@ public class ConversationVO implements Serializable {
     private String portraitUrl;
     private int unreadMessageCount;
     private boolean isTop;
-    private Message.ReceivedStatus receivedStatus;
+    private String receivedStatus;
     private Message.SentStatus sentStatus;
     private long receivedTime;
     private long sentTime;
@@ -46,10 +45,10 @@ public class ConversationVO implements Serializable {
     private String senderUserId;
     private String senderUserName;
     private int latestMessageId;
-    private MessageContent latestMessage;
+    private MessageContentVO latestMessage;
     private String draft;
     private Conversation.ConversationNotificationStatus notificationStatus;
-
+    private int resultCode;
     public Conversation.ConversationType getConversationType() {
         return conversationType;
     }
@@ -98,11 +97,11 @@ public class ConversationVO implements Serializable {
         isTop = top;
     }
 
-    public Message.ReceivedStatus getReceivedStatus() {
+    public String getReceivedStatus() {
         return receivedStatus;
     }
 
-    public void setReceivedStatus(Message.ReceivedStatus receivedStatus) {
+    public void setReceivedStatus(String receivedStatus) {
         this.receivedStatus = receivedStatus;
     }
 
@@ -162,11 +161,11 @@ public class ConversationVO implements Serializable {
         this.latestMessageId = latestMessageId;
     }
 
-    public MessageContent getLatestMessage() {
+    public MessageContentVO getLatestMessage() {
         return latestMessage;
     }
 
-    public void setLatestMessage(MessageContent latestMessage) {
+    public void setLatestMessage(MessageContentVO latestMessage) {
         this.latestMessage = latestMessage;
     }
 
@@ -184,5 +183,13 @@ public class ConversationVO implements Serializable {
 
     public void setNotificationStatus(Conversation.ConversationNotificationStatus notificationStatus) {
         this.notificationStatus = notificationStatus;
+    }
+
+    public int getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(int resultCode) {
+        this.resultCode = resultCode;
     }
 }

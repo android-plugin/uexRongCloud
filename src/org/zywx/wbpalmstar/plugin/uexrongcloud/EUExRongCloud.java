@@ -19,6 +19,7 @@ import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConnectResultVO;
 import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConnectVO;
 import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationInputVO;
 import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationNotificationStatusVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationVO;
 import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.DeleteMessagesResultVO;
 import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.DeleteMessagesVO;
 import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.GetConversationListResultVO;
@@ -489,7 +490,6 @@ public class EUExRongCloud extends EUExBase {
 
 
     private void cbSendMessage(MessageResultVO resultVO) {
-//        callBackPluginJs(JsConst.CALLBACK_SEND_MESSAGE, DataHelper.gson.toJson(resultVO));
         callBackJsObject(JsConst.CALLBACK_SEND_MESSAGE, DataHelper.gson.toJsonTree(resultVO));
 
     }
@@ -500,12 +500,22 @@ public class EUExRongCloud extends EUExBase {
             resultVO.setResultCode(RESULT_CODE_FAILED);
         } else {
             resultVO.setResultCode(0);
-            resultVO.setConversations(mRongIMClient.getConversationList());
+            List<Conversation> conversations=mRongIMClient.getConversationList();
+            if (conversations!=null){
+                List<ConversationVO> conversationVOs=new ArrayList<ConversationVO>();
+                for (Conversation conversation:conversations) {
+                    if (conversation!=null){
+                        conversationVOs.add(ModelTranslation.translateConversation(conversation));
+                    }
+                }
+                resultVO.setConversations(conversationVOs);
+            }
         }
         return DataHelper.gson.toJson(resultVO);
     }
 
     public String getConversation(String[] params) {
+        ConversationVO conversationVO=new ConversationVO();
         if (params == null || params.length < 1) {
             errorCallback(0, 0, "error params!");
             return null;
@@ -513,7 +523,13 @@ public class EUExRongCloud extends EUExBase {
         String json = params[0];
         ConversationInputVO inputVO = DataHelper.gson.fromJson(json, ConversationInputVO.class);
         Conversation conversation = mRongIMClient.getConversation(inputVO.getConversationType(), inputVO.getTargetId());
-        return DataHelper.gson.toJson(conversation);
+        if (conversation!=null) {
+            ModelTranslation.translateConversation(conversationVO,conversation);
+            conversationVO.setResultCode(0);
+        }else{
+            conversationVO.setResultCode(2);
+        }
+        return DataHelper.gson.toJson(conversationVO);
     }
 
     public void removeConversation(String[] params) {

@@ -13,4 +13,8 @@
 	<bgcolor>#fefefe</bgcolor>
 	<widgetOne version="[widgetOneVersion]" />
 	<orientation>15</orientation>
+    <config desc="uexRongCloud" type="KEY">
+        <param name="$uexRongCloud_APPKEY$" platform="Android" value="e5t4ouvptdhca"/>
+    </config>
+
 </widget>
