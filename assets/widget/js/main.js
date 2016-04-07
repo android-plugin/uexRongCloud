@@ -20,14 +20,40 @@ function connect() {
 function sendMessage() {
 
   var params = {
-    objectName: "RC:TxtMsg",
+    objectName: "RC:CmdNtf",
     conversationType: "PRIVATE",
     targetId: globalTargetId,
     // targetId: "55666",
     extra: "extra info ...", //消息的附加字段
     localId: 111, //消息的唯一id，用于标识接收发送回调的处理
-    //msgType 为0时(文字消息) 需要传以下参数
-    text: "text content ..." //消息的文字内容
+
+    //objectName 为"RC:TxtMsg"时(文字消息)
+    text: "text content ...", //消息的文字内容
+
+    //objectName 为"RC:VcMsg"时(语音消息)
+    voicePath: 'res://voice.mp3', //语音文件的路径
+    duration: 3, //Number类型 语音消息的时长，单位为秒
+
+    //objectName 为"RC:ImgMsg"时(图片消息)
+    // imgPath: 'res://img.png', //图片的本地路径
+    thumbPath: 'res://img.png', //缩略图
+
+    //objectName 为"RC:ImgTextMsg"时(图文消息)
+    title: '消息的标题', //消息的标题
+    description: '消息的内容描述', //消息的内容描述
+    // imgPath: 'http://img1.3lian.com/2015/w7/90/d/1.jpg', //发送图片的网络路径
+    url: 'http://www.baidu.com', //图文消息中包含的需要跳转到的URL
+
+    //objectName 为"RC:LBSMsg"时(位置消息)
+    latitude: '39.9087202', //维度
+    longitude: '116.3974799', //经度
+    poi: '北京天安门', //地理位置的名称
+    imgPath: 'res://img.png', //地图略缩图的路径
+
+
+    //objectName 为"RC:CmdNtf"时(命令消息)
+    name: 'action_name', //命令的名称
+    data: 'action_data .....', //命令的数据
   };
   var data = JSON.stringify(params);
   uexRongCloud.sendMessage(data);
@@ -220,7 +246,7 @@ function cbSendMessage(info) {
 }
 
 function onMessageReceived(info) {
-  alert('onMessageReceived: ' + info);
+  alert('onMessageReceived: ' + JSON.stringify(info));
 }
 
 function cbRemoveConversation(info) {

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Process;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -215,16 +216,15 @@ public class EUExRongCloud extends EUExBase {
                 sendCmdMessage(sendMessageVO);
                 break;
         }
-
     }
 
-    private void sendCmdMessage(SendMessageVO sendMessageVO) {
+    private void sendCmdMessage(final SendMessageVO sendMessageVO) {
         final MessageResultVO resultVO = new MessageResultVO();
-        CommandMessage message = CommandMessage.obtain(sendMessageVO.getName(), sendMessageVO.getData());
+        CommandMessage commandMessage = CommandMessage.obtain(sendMessageVO.getName(), sendMessageVO.getData());
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(), sendMessageVO.getTargetId(),
-                message, "", "",
+                commandMessage, "", "",
                 new RongIMClient.SendMessageCallback() {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
@@ -255,7 +255,7 @@ public class EUExRongCloud extends EUExBase {
                 });
     }
 
-    private void sendLBSMessage(SendMessageVO sendMessageVO) {
+    private void sendLBSMessage(final SendMessageVO sendMessageVO) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -266,10 +266,13 @@ public class EUExRongCloud extends EUExBase {
             resultVO.setResultCode(RESULT_CODE_FAILED);
         }
         Uri imageUri = Uri.fromFile(imageFile);
-        LocationMessage message = LocationMessage.obtain(Double.valueOf(sendMessageVO.getLatitude()), Double.valueOf
+        LocationMessage locationMessage = LocationMessage.obtain(Double.valueOf(sendMessageVO.getLatitude()), Double.valueOf
                 (sendMessageVO.getLongitude()), sendMessageVO.getPoi(), imageUri);
+        if (!TextUtils.isEmpty(sendMessageVO.getExtra())) {
+            locationMessage.setExtra(sendMessageVO.getExtra());
+        }
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(), sendMessageVO.getTargetId(),
-                message, "", "",
+                locationMessage, "", "",
                 new RongIMClient.SendMessageCallback() {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
@@ -300,15 +303,18 @@ public class EUExRongCloud extends EUExBase {
                 });
     }
 
-    private void sendImgTextMessage(SendMessageVO sendMessageVO) {
+    private void sendImgTextMessage(final SendMessageVO sendMessageVO) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
-        RichContentMessage message = RichContentMessage.obtain(sendMessageVO.getTitle(), sendMessageVO.getDescription(), sendMessageVO
-                .getImgUrl());
+        RichContentMessage richContentMessage = RichContentMessage.obtain(sendMessageVO.getTitle(), sendMessageVO.getDescription(), sendMessageVO
+                .getImgPath());
+        if (!TextUtils.isEmpty(sendMessageVO.getExtra())) {
+            richContentMessage.setExtra(sendMessageVO.getExtra());
+        }
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(),
                 sendMessageVO.getTargetId(),
-                message, "", "",
+                richContentMessage, "", "",
                 new RongIMClient.SendMessageCallback() {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
@@ -341,7 +347,7 @@ public class EUExRongCloud extends EUExBase {
 
     }
 
-    private void sendVoiceMessage(SendMessageVO sendMessageVO) {
+    private void sendVoiceMessage(final SendMessageVO sendMessageVO) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -352,9 +358,12 @@ public class EUExRongCloud extends EUExBase {
             resultVO.setResultCode(RESULT_CODE_FAILED);
         }
         Uri voiceUri = Uri.fromFile(voiceFile);
-        VoiceMessage message = VoiceMessage.obtain(voiceUri, sendMessageVO.getDuration());
+        VoiceMessage voiceMessage = VoiceMessage.obtain(voiceUri, sendMessageVO.getDuration());
+        if (!TextUtils.isEmpty(sendMessageVO.getExtra())) {
+            voiceMessage.setExtra(sendMessageVO.getExtra());
+        }
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(),
-                sendMessageVO.getTargetId(), message, "", "",
+                sendMessageVO.getTargetId(), voiceMessage, "", "",
                 new RongIMClient.SendMessageCallback() {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
@@ -387,7 +396,7 @@ public class EUExRongCloud extends EUExBase {
 
     }
 
-    private void sendImgMessage(SendMessageVO sendMessageVO) {
+    private void sendImgMessage(final SendMessageVO sendMessageVO) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -398,9 +407,13 @@ public class EUExRongCloud extends EUExBase {
             resultVO.setResultCode(RESULT_CODE_FAILED);
         }
         Uri imageUri = Uri.fromFile(imageFile);
+        ImageMessage imageMessage=ImageMessage.obtain(imageUri, imageUri);
+        if (!TextUtils.isEmpty(sendMessageVO.getExtra())) {
+            imageMessage.setExtra(sendMessageVO.getExtra());
+        }
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(),
-                sendMessageVO.getTargetId(),
-                ImageMessage.obtain(imageUri, imageUri), "", "",
+                sendMessageVO.getTargetId(),imageMessage
+                , "", "",
                 new RongIMClient.SendImageMessageCallback() {
                     @Override
                     public void onAttached(io.rong.imlib.model.Message message) {
@@ -447,14 +460,18 @@ public class EUExRongCloud extends EUExBase {
 
     }
 
-    private void sendTextMessage(SendMessageVO sendMessageVO) {
+    private void sendTextMessage(final SendMessageVO sendMessageVO) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
+        TextMessage textMessage=TextMessage.obtain(sendMessageVO.getText());
+        if (!TextUtils.isEmpty(sendMessageVO.getExtra())) {
+            textMessage.setExtra(sendMessageVO.getExtra());
+        }
         mRongIMClient.sendMessage(sendMessageVO
                         .getConversationType(),
                 sendMessageVO.getTargetId(),
-                TextMessage.obtain(sendMessageVO.getText()), "", "",
+                textMessage, "", "",
                 new RongIMClient.SendMessageCallback() {
 
                     @Override
