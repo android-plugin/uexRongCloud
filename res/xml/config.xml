@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uexplugins>
+    <plugin
+        className="org.zywx.wbpalmstar.plugin.uexrongcloud.EUExRongCloud" uexName="uexRongCloud" >
+        <method name="init" type="1" />
+        <method name="connect" type="1" />
+        <method name="sendMessage" type="1" />
+        <method name="onMessageSent" type="2"/>
+        <method name="onMessageReceived" type="2" />
+        <method name="getConversationList" type="1" />
+        <method name="getConversation" type="1" />
+        <method name="removeConversation" type="1" />
+        <method name="clearConversations" type="1" />
+        <method name="setConversationToTop" type="1" />
+        <method name="getConversationNotificationStatus" type="1" />
+        <method name="setConversationNotificationStatus" type="1" />
+        <method name="getLatestMessages" type="1" />
+        <method name="getHistoryMessages" type="1" />
+        <method name="deleteMessages" type="1" />
+        <method name="clearMessages" type="1" />
+        <method name="getTotalUnreadCount" type="1" />
+        <method name="getUnreadCount" type="1" />
+        <method name="getUnreadCountByConversationTypes" type="1" />
+        <method name="setMessageReceivedStatus" type="1" />
+        <method name="clearMessagesUnreadStatus" type="1" />
+    </plugin>
+</uexplugins>

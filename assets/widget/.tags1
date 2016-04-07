@@ -1,0 +1,120 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+init	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function init() {$/;"	function	line:1
+init	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function init() {$/;"	function	line:1
+globalTargetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^var globalTargetId = "123456";$/;"	variable	line:6
+globalMsgId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^var globalMsgId = "56";$/;"	variable	line:7
+connect	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function connect() {$/;"	function	line:9
+connect.params.token	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:12
+connect	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function connect() {$/;"	function	line:9
+sendMessage	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function sendMessage() {$/;"	function	line:20
+sendMessage.params.objectName	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:22
+sendMessage.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    objectName: "RC:TxtMsg",$/;"	property	line:23
+sendMessage.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:24
+sendMessage.params.extra	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    targetId: globalTargetId,$/;"	property	line:25
+sendMessage.params.localId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    extra: "extra info ...", \/\/消息的附加字段$/;"	property	line:27
+sendMessage.params.text	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    localId: 111, \/\/消息的唯一id，用于标识接收发送回调的处理$/;"	property	line:28
+sendMessage	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function sendMessage() {$/;"	function	line:20
+getConversationList	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getConversationList() {$/;"	function	line:36
+getConversationList	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getConversationList() {$/;"	function	line:36
+getConversation	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getConversation() {$/;"	function	line:41
+getConversation.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:42
+getConversation.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:43
+getConversation	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getConversation() {$/;"	function	line:41
+removeConversation	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function removeConversation() {$/;"	function	line:51
+removeConversation.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:52
+removeConversation.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:53
+removeConversation	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function removeConversation() {$/;"	function	line:51
+clearConversations	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function clearConversations() {$/;"	function	line:60
+clearConversations.params.conversationTypes	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:63
+clearConversations	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function clearConversations() {$/;"	function	line:60
+setConversationToTop	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function setConversationToTop() {$/;"	function	line:70
+setConversationToTop.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:71
+setConversationToTop.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:72
+setConversationToTop.params.isTop	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    targetId: globalTargetId,$/;"	property	line:73
+setConversationToTop	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function setConversationToTop() {$/;"	function	line:70
+getConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getConversationNotificationStatus() {$/;"	function	line:80
+getConversationNotificationStatus.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:81
+getConversationNotificationStatus.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:82
+getConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getConversationNotificationStatus() {$/;"	function	line:80
+setConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function setConversationNotificationStatus() {$/;"	function	line:89
+setConversationNotificationStatus.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:90
+setConversationNotificationStatus.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:91
+setConversationNotificationStatus.params.status	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    targetId: globalTargetId,$/;"	property	line:92
+setConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function setConversationNotificationStatus() {$/;"	function	line:89
+getLatestMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getLatestMessages() {$/;"	function	line:99
+getLatestMessages.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:100
+getLatestMessages.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:101
+getLatestMessages.params.count	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    targetId: globalTargetId,$/;"	property	line:102
+getLatestMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getLatestMessages() {$/;"	function	line:99
+getHistoryMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getHistoryMessages() {$/;"	function	line:109
+getHistoryMessages.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:110
+getHistoryMessages.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:111
+getHistoryMessages.params.count	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    targetId: globalTargetId,$/;"	property	line:112
+getHistoryMessages.params.oldestMessageId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    count: 20,$/;"	property	line:113
+getHistoryMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getHistoryMessages() {$/;"	function	line:109
+deleteMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function deleteMessages() {$/;"	function	line:120
+deleteMessages.params.messageIds	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:123
+deleteMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function deleteMessages() {$/;"	function	line:120
+clearMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function clearMessages() {$/;"	function	line:130
+clearMessages.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:131
+clearMessages.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:132
+clearMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function clearMessages() {$/;"	function	line:130
+getTotalUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getTotalUnreadCount() {$/;"	function	line:139
+getTotalUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getTotalUnreadCount() {$/;"	function	line:139
+getUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getUnreadCount() {$/;"	function	line:144
+getUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getUnreadCount() {$/;"	function	line:144
+getUnreadCountByConversationTypes	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getUnreadCountByConversationTypes() {$/;"	function	line:151
+getUnreadCountByConversationTypes.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:152
+getUnreadCountByConversationTypes.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:153
+getUnreadCountByConversationTypes	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function getUnreadCountByConversationTypes() {$/;"	function	line:151
+setMessageReceivedStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function setMessageReceivedStatus() {$/;"	function	line:161
+setMessageReceivedStatus.params.messageId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:162
+setMessageReceivedStatus.params.receivedStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    messageId: globalMsgId, \/\/ Number 消息 Id$/;"	property	line:163
+setMessageReceivedStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function setMessageReceivedStatus() {$/;"	function	line:161
+clearMessagesUnreadStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function clearMessagesUnreadStatus() {$/;"	function	line:170
+clearMessagesUnreadStatus.params.conversationType	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^  var params = {$/;"	property	line:171
+clearMessagesUnreadStatus.params.targetId	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^    conversationType: "PRIVATE",$/;"	property	line:172
+clearMessagesUnreadStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function clearMessagesUnreadStatus() {$/;"	function	line:170
+uexOnload	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^window.uexOnload = function(type) {$/;"	function	line:180
+window.uexOnload	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^}$/;"	function	line:177
+cbInit	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbInit(info) {$/;"	function	line:206
+cbInit	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbInit(info) {$/;"	function	line:206
+cbConnect	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbConnect(info) {$/;"	function	line:210
+cbConnect	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbConnect(info) {$/;"	function	line:210
+cbSendMessage	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSendMessage(info) {$/;"	function	line:214
+cbSendMessage	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSendMessage(info) {$/;"	function	line:214
+onMessageReceived	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function onMessageReceived(info) {$/;"	function	line:222
+onMessageReceived	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function onMessageReceived(info) {$/;"	function	line:222
+cbRemoveConversation	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbRemoveConversation(info) {$/;"	function	line:226
+cbRemoveConversation	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbRemoveConversation(info) {$/;"	function	line:226
+cbClearConversations	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbClearConversations(info) {$/;"	function	line:230
+cbClearConversations	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbClearConversations(info) {$/;"	function	line:230
+cbSetConversationToTop	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSetConversationToTop(info) {$/;"	function	line:234
+cbSetConversationToTop	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSetConversationToTop(info) {$/;"	function	line:234
+cbGetConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetConversationNotificationStatus(info) {$/;"	function	line:238
+cbGetConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetConversationNotificationStatus(info) {$/;"	function	line:238
+cbSetConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSetConversationNotificationStatus(info) {$/;"	function	line:242
+cbSetConversationNotificationStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSetConversationNotificationStatus(info) {$/;"	function	line:242
+cbGetLatestMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetLatestMessages(info) {$/;"	function	line:246
+cbGetLatestMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetLatestMessages(info) {$/;"	function	line:246
+cbGetHistoryMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetHistoryMessages(info) {$/;"	function	line:250
+cbGetHistoryMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetHistoryMessages(info) {$/;"	function	line:250
+cbDeleteMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbDeleteMessages(info) {$/;"	function	line:254
+cbDeleteMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbDeleteMessages(info) {$/;"	function	line:254
+cbClearMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbClearMessages(info) {$/;"	function	line:258
+cbClearMessages	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbClearMessages(info) {$/;"	function	line:258
+cbGetTotalUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetTotalUnreadCount(info) {$/;"	function	line:262
+cbGetTotalUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetTotalUnreadCount(info) {$/;"	function	line:262
+cbGetUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetUnreadCount(info) {$/;"	function	line:266
+cbGetUnreadCount	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetUnreadCount(info) {$/;"	function	line:266
+cbGetUnreadCountByConversationTypes	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetUnreadCountByConversationTypes(info) {$/;"	function	line:270
+cbGetUnreadCountByConversationTypes	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbGetUnreadCountByConversationTypes(info) {$/;"	function	line:270
+cbSetMessageReceivedStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSetMessageReceivedStatus(info) {$/;"	function	line:274
+cbSetMessageReceivedStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbSetMessageReceivedStatus(info) {$/;"	function	line:274
+cbClearMessagesUnreadStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbClearMessagesUnreadStatus(info) {$/;"	function	line:278
+cbClearMessagesUnreadStatus	/Users/ylt/code/Android/appcanTest/uexRongCloud/assets/widget/js/main.js	/^function cbClearMessagesUnreadStatus(info) {$/;"	function	line:278
