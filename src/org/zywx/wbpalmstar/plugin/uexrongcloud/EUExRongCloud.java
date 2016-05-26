@@ -49,7 +49,7 @@ public class EUExRongCloud extends EUExBase {
     public static final String RC_IMG_MSG = "RC:ImgMsg";
     public static final String RC_IMG_TEXT_MSG = "RC:ImgTextMsg";
     public static final String RC_LBS_MSG = "RC:LBSMsg";
-    public static final String RC_CMD_NTF = "RC:CmdNtf";
+    public static final String RC_CMD_NTF = "RC:CmdMsg";
 
     public static final int RESULT_CODE_OK = 1;
     public static final int RESULT_CODE_PREPARE = 0;

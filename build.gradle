@@ -21,11 +21,11 @@ apply plugin: 'com.android.application'
 //apply plugin: 'com.android.library'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile fileTree(include: '*.jar', dir: 'libs')
     compile(name: 'Engine-release-3.3.0', ext: 'aar')
     //    compile project(':appcan-android:Engine')
     compile 'com.android.support:support-v4:23.1.0'
-    compile files('libs/Rong_IMLib_v2_4_10.jar')
+    compile files('libs/Rong_IMLib_v2_5_2.jar')
 }
 
 repositories {
