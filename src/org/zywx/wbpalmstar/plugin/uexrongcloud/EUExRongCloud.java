@@ -1,5 +1,6 @@
 package org.zywx.wbpalmstar.plugin.uexrongcloud;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.net.Uri;
@@ -85,11 +86,15 @@ public class EUExRongCloud extends EUExBase {
         public boolean onReceived(io.rong.imlib.model.Message message, int left) {
             //开发者根据自己需求自行处理
 
-            OnMessageReceivedVO onMessageReceivedVO = new OnMessageReceivedVO();
+            final OnMessageReceivedVO onMessageReceivedVO = new OnMessageReceivedVO();
             onMessageReceivedVO.setLeft(left);
             onMessageReceivedVO.setMessage(ModelTranslation.translateMessageVO(message));
-            callBackJsObject(JsConst.ON_MESSAGE_RECEIVED, DataHelper.gson.toJsonTree(onMessageReceivedVO));
-
+            ((Activity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    callBackJsObject(JsConst.ON_MESSAGE_RECEIVED, DataHelper.gson.toJsonTree(onMessageReceivedVO));
+                }
+            });
             return false;
         }
 
