@@ -82,6 +82,8 @@ public class SendMessageVO implements Serializable {
     private String name;
     private String data;
 
+    private String thumbPath;
+
     public String getObjectName() {
         return objectName;
     }
@@ -210,4 +212,11 @@ public class SendMessageVO implements Serializable {
         this.data = data;
     }
 
+    public String getThumbPath() {
+        return thumbPath;
+    }
+
+    public void setThumbPath(String thumbPath) {
+        this.thumbPath = thumbPath;
+    }
 }
