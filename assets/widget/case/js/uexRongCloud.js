@@ -84,7 +84,7 @@ if (UNIT_TEST) {
                 // targetId: "55666",
                 extra: "extra info ...", //消息的附加字段
                 imgPath: 'res://image.jpg', //图片的本地路径
-                thumbPath: 'res://icon-40.png' //缩略图
+                thumbPath: 'res://icon.png' //缩略图
             }, function (error, messageId, progress) {
                 if (error == 0) {
                     UNIT_TEST.log("准备发送:" + messageId)
