@@ -6,6 +6,8 @@ if (UNIT_TEST) {
 
     var globalTargetId = "55666";
 
+    var globalMsgId="";
+
     var uexRongCloudCase = {
         "init": function () {
 
@@ -123,7 +125,7 @@ if (UNIT_TEST) {
         },
         "sendLBSMessage": function () {
             uexRongCloud.sendMessage({
-                objectName: "RC:TxtMsg",
+                objectName: "RC:LBSMsg",
                 conversationType: "PRIVATE",
                 targetId: globalTargetId,
                 // targetId: "55666",
@@ -132,7 +134,7 @@ if (UNIT_TEST) {
                 latitude: '39.9087202', //维度
                 longitude: '116.3974799', //经度
                 poi: '北京天安门', //地理位置的名称
-                imgPath: 'res://img.png' //地图略缩图的路径
+                imgPath: 'res://image.jpg' //地图略缩图的路径
             }, function (error, messageId, progress) {
                 if (error == 0) {
                     UNIT_TEST.log("准备发送:" + messageId);
@@ -148,7 +150,7 @@ if (UNIT_TEST) {
         },
         "sendCMDMessage": function () {
             uexRongCloud.sendMessage({
-                objectName: "RC:CmdNtf",
+                objectName: "RC:CmdMsg",
                 conversationType: "PRIVATE",
                 targetId: globalTargetId,
                 // targetId: "55666",
@@ -179,26 +181,6 @@ if (UNIT_TEST) {
             };
             var result = uexRongCloud.getConversation(params);
             UNIT_TEST.assertNotEqual(result, null)
-        },
-        "removeConversation": function () {
-            var params = {
-                conversationType: "PRIVATE",
-                targetId: globalTargetId
-            };
-            uexRongCloud.removeConversation(params, function (error, data) {
-                UNIT_TEST.assert(!error);
-            });
-
-        },
-        "clearConversations": function () {
-            var types = [];
-            types[0] = "PRIVATE";
-            var params = {
-                conversationTypes: types
-            };
-            uexRongCloud.clearConversations(params, function (error, data) {
-                UNIT_TEST.assert(!error);
-            });
         },
         "setConversationToTop": function () {
             var params = {
@@ -236,6 +218,7 @@ if (UNIT_TEST) {
                 count: 20
             };
             uexRongCloud.getLatestMessages(params, function (error, data) {
+                UNIT_TEST.log(JSON.stringify(data));
                 UNIT_TEST.assert(!error);
             });
         },
@@ -247,12 +230,12 @@ if (UNIT_TEST) {
                 oldestMessageId: -1
             };
             uexRongCloud.getHistoryMessages(params, function (error, data) {
+                globalMsgId=data[0].messageId;
                 UNIT_TEST.assert(!error);
             });
         },
         "deleteMessages": function () {
-            var ids = new Array();
-
+            var ids = [globalMsgId];
             var params = {
                 messageIds: ids
             };
@@ -269,21 +252,47 @@ if (UNIT_TEST) {
                 UNIT_TEST.assert(!error);
             });
         },
-        "getTotalUnreadCount": function () {
-            var count = uexRongCloud.getTotalUnreadCount();
-            UNIT_TEST.assert(count >= 0);
-        },
-        "getUnreadCount": function () {
-            var params = {};
-            var result = uexRongCloud.getUnreadCount(params);
-            UNIT_TEST.assert(count >= 0);
-        },
-        "getUnreadCountByConversationTypes": function () {
+        "removeConversation": function () {
             var params = {
                 conversationType: "PRIVATE",
                 targetId: globalTargetId
             };
-            var result = uexRongCloud.getUnreadCountByConversationTypes(params);
+            uexRongCloud.removeConversation(params, function (error, data) {
+                UNIT_TEST.assert(!error);
+            });
+
+        },
+        "clearConversations": function () {
+            var types = [];
+            types[0] = "PRIVATE";
+            var params = {
+                conversationTypes: types
+            };
+            uexRongCloud.clearConversations(params, function (error, data) {
+                UNIT_TEST.assert(!error);
+            });
+        },
+        "getTotalUnreadCount": function () {
+            alert("请用"+globalTargetId+"的账户发送至少一条消息后点确定");
+            var count = uexRongCloud.getTotalUnreadCount();
+            UNIT_TEST.log("未读消息总数:"+count);
+            UNIT_TEST.assert(count >= 0);
+        },
+        "getUnreadCount": function () {
+            var params = {
+                conversationType: "PRIVATE",
+                targetId: globalTargetId
+            };
+            var count = uexRongCloud.getUnreadCount(params);
+            UNIT_TEST.log(globalTargetId+"未读消息总数:"+count);
+            UNIT_TEST.assert(count >= 0);
+        },
+        "getUnreadCountByConversationTypes": function () {
+            var params = {
+                conversationTypes: ["PRIVATE"]
+            };
+            var count = uexRongCloud.getUnreadCountByConversationTypes(params);
+            UNIT_TEST.log("单聊未读消息总数:"+count);
             UNIT_TEST.assert(count >= 0);
         },
         "setMessageReceivedStatus": function () {
@@ -292,6 +301,7 @@ if (UNIT_TEST) {
                 receivedStatus: "READ" //"UNREAD","READ","LISTENED","DOWNLOADED"
             };
             uexRongCloud.setMessageReceivedStatus(params);
+            UNIT_TEST.assert(true);
         },
         "clearMessagesUnreadStatus": function () {
             var params = {
@@ -299,6 +309,7 @@ if (UNIT_TEST) {
                 targetId: globalTargetId
             };
             uexRongCloud.clearMessagesUnreadStatus(params);
+            UNIT_TEST.assert(true);
         },
         "disconnect": function () {
             uexRongCloud.disconnect({

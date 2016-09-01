@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
+import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.message.*;
@@ -23,6 +24,8 @@ import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.id.message;
 
 public class EUExRongCloud extends EUExBase {
 
@@ -436,7 +439,8 @@ public class EUExRongCloud extends EUExBase {
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(),
                 sendMessageVO.getTargetId(),imageMessage
                 , "", "",
-                new RongIMClient.SendImageMessageCallback() {
+                new IRongCallback.ISendMessageCallback(){
+
                     @Override
                     public void onAttached(io.rong.imlib.model.Message message) {
                         BDebug.i("onAttached");
@@ -456,33 +460,8 @@ public class EUExRongCloud extends EUExBase {
                         resultVO.setMessageId(message.getMessageId());
                         cbSendMessage(resultVO,callbackId);
                     }
-
-                    @Override
-                    public void onProgress(io.rong.imlib.model.Message message, int i) {
-                        BDebug.i("onProgress");
-                        resultVO.setResultCode(RESULT_CODE_PROGRESS);
-                        resultVO.setMessageId(message.getMessageId());
-                        resultVO.setProgress(i);
-                        cbSendMessage(resultVO,callbackId);
-                    }
-
                 }
-                , new RongIMClient.ResultCallback<io.rong.imlib.model.Message>() {
-                    @Override
-                    public void onSuccess(io.rong.imlib.model.Message message) {
-                        BDebug.i("Result onSuccess");
-                        resultVO.setResultCode(RESULT_CODE_PREPARE);
-                        ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO,callbackId);
-                    }
 
-                    @Override
-                    public void onError(RongIMClient.ErrorCode errorCode) {
-                        BDebug.i("Result onError");
-                        resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO,callbackId);
-                    }
-                }
         );
 
     }
@@ -935,7 +914,7 @@ public class EUExRongCloud extends EUExBase {
             return -1;
         }
         String json = params[0];
-        ConversationInputVO inputVO=new ConversationInputVO();
+        ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
         return mRongIMClient.getUnreadCount(inputVO.getConversationType(),inputVO.getTargetId());
     }
 
@@ -945,7 +924,7 @@ public class EUExRongCloud extends EUExBase {
             return -1;
         }
         String json = params[0];
-        ConversationInputVO inputVO=new ConversationInputVO();
+        ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
         return mRongIMClient.getUnreadCount(inputVO.getConversationTypes());
     }
 
