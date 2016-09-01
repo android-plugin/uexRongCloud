@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.id.message;
-
 public class EUExRongCloud extends EUExBase {
 
     public static final String RC_TXT_MSG = "RC:TxtMsg";
