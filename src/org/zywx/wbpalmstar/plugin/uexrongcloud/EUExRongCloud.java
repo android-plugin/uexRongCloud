@@ -201,25 +201,24 @@ public class EUExRongCloud extends EUExBase {
         }
         String json = params[0];
         SendMessageVO sendMessageVO = DataHelper.gson.fromJson(json, SendMessageVO.class);
-        switch (sendMessageVO.getObjectName()) {
-            case RC_TXT_MSG:
-                sendTextMessage(sendMessageVO);
-                break;
-            case RC_IMG_MSG:
-                sendImgMessage(sendMessageVO);
-                break;
-            case RC_VC_MSG:
-                sendVoiceMessage(sendMessageVO);
-                break;
-            case RC_IMG_TEXT_MSG:
-                sendImgTextMessage(sendMessageVO);
-                break;
-            case RC_LBS_MSG:
-                sendLBSMessage(sendMessageVO);
-                break;
-            case RC_CMD_NTF:
-                sendCmdMessage(sendMessageVO);
-                break;
+        if (sendMessageVO.getObjectName().equals(RC_TXT_MSG)) {
+            sendTextMessage(sendMessageVO);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_IMG_MSG)) {
+            sendImgMessage(sendMessageVO);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_VC_MSG)) {
+            sendVoiceMessage(sendMessageVO);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_IMG_TEXT_MSG)) {
+            sendImgTextMessage(sendMessageVO);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_LBS_MSG)) {
+            sendLBSMessage(sendMessageVO);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_CMD_NTF)) {
+            sendCmdMessage(sendMessageVO);
+
         }
     }
 
