@@ -204,25 +204,24 @@ public class EUExRongCloud extends EUExBase {
         if (params.length>1){
             callbackId= Integer.parseInt(params[1]);
         }
-        switch (sendMessageVO.getObjectName()) {
-            case RC_TXT_MSG:
-                sendTextMessage(sendMessageVO,callbackId);
-                break;
-            case RC_IMG_MSG:
-                sendImgMessage(sendMessageVO,callbackId);
-                break;
-            case RC_VC_MSG:
-                sendVoiceMessage(sendMessageVO,callbackId);
-                break;
-            case RC_IMG_TEXT_MSG:
-                sendImgTextMessage(sendMessageVO,callbackId);
-                break;
-            case RC_LBS_MSG:
-                sendLBSMessage(sendMessageVO,callbackId);
-                break;
-            case RC_CMD_NTF:
-                sendCmdMessage(sendMessageVO,callbackId);
-                break;
+        if (sendMessageVO.getObjectName().equals(RC_TXT_MSG)) {
+            sendTextMessage(sendMessageVO, callbackId);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_IMG_MSG)) {
+            sendImgMessage(sendMessageVO, callbackId);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_VC_MSG)) {
+            sendVoiceMessage(sendMessageVO, callbackId);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_IMG_TEXT_MSG)) {
+            sendImgTextMessage(sendMessageVO, callbackId);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_LBS_MSG)) {
+            sendLBSMessage(sendMessageVO, callbackId);
+
+        } else if (sendMessageVO.getObjectName().equals(RC_CMD_NTF)) {
+            sendCmdMessage(sendMessageVO, callbackId);
+
         }
     }
 
