@@ -23,6 +23,55 @@
         <meta-data
             android:name="RONG_CLOUD_APP_KEY"
             android:value="$uexRongCloud_APPKEY$" />
+        <service
+                android:process=":ipc"
+                android:exported="true"
+                android:name="io.rong.imlib.ipc.RongService">
+        </service>
+
+        <service android:name="io.rong.imlib.ReConnectService"/>
+        <receiver android:name="io.rong.imlib.ConnectChangeReceiver"/>
+
+        <receiver android:name="io.rong.imlib.HeartbeatReceiver"
+                  android:process=":ipc"/>
+
+        <!-- end -->
+        <!--必选： SDK 核心功能-->
+        <service
+                android:name="io.rong.push.core.PushRegistrationService"
+                android:exported="false">
+        </service>
+        <service
+                android:name="io.rong.push.PushService"
+                android:exported="false"
+                android:process="io.rong.push">
+        </service>
+
+        <service
+                android:name="io.rong.push.core.MessageHandleService"
+                android:exported="true">
+        </service>
+
+        <receiver
+                android:name="io.rong.push.PushReceiver"
+                android:process="io.rong.push">
+            <intent-filter>
+                <action android:name="io.rong.push.intent.action.HEART_BEAT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- end -->
     </application>
 
 </manifest>

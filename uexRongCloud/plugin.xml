@@ -63,7 +63,8 @@
         <method
             name="clearMessagesUnreadStatus"
         />
-
+        <method
+            name="disconnect"/>
 
     </plugin>
 </uexplugins>

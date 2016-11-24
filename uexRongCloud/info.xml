@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
     <plugin
-        uexName="uexRongCloud" version="3.0.0" build="0">
-        <info>0:融云通讯插件</info>
+        uexName="uexRongCloud" version="4.0.0" build="1">
+        <info>1:4.0改造</info>
+        <build>0:融云通讯插件</build>
     </plugin>
 </uexplugins>

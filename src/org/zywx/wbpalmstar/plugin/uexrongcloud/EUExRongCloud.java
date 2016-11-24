@@ -8,7 +8,10 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
-
+import io.rong.imlib.IRongCallback;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
+import io.rong.message.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.zywx.wbpalmstar.base.BDebug;
@@ -16,32 +19,11 @@ import org.zywx.wbpalmstar.base.BUtility;
 import org.zywx.wbpalmstar.engine.DataHelper;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ClearConversationsVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConnectResultVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConnectVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationInputVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationNotificationStatusVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.DeleteMessagesResultVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.DeleteMessagesVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.GetConversationListResultVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.MessageResultVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.OnMessageReceivedVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.SendMessageVO;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.SetMessageReceivedStatusVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.rong.imlib.RongIMClient;
-import io.rong.imlib.model.Conversation;
-import io.rong.message.CommandMessage;
-import io.rong.message.ImageMessage;
-import io.rong.message.LocationMessage;
-import io.rong.message.RichContentMessage;
-import io.rong.message.TextMessage;
-import io.rong.message.VoiceMessage;
 
 public class EUExRongCloud extends EUExBase {
 
@@ -133,7 +115,15 @@ public class EUExRongCloud extends EUExBase {
             jsonResult.put("result", true);
         } catch (JSONException e) {
         }
-        callBackJsObject(JsConst.CALLBACK_INIT, jsonResult);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        if(callbackId!=-1){
+            callbackToJs(callbackId,false,0);
+        }else{
+            callBackJsObject(JsConst.CALLBACK_INIT, jsonResult);
+        }
     }
 
     public void connect(String[] params) {
@@ -142,6 +132,10 @@ public class EUExRongCloud extends EUExBase {
             return;
         }
         String json = params[0];
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
         ConnectVO connectVO = DataHelper.gson.fromJson(json, ConnectVO.class);
         final ConnectResultVO resultVO = new ConnectResultVO();
         if (mContext.getApplicationInfo().packageName.equals(
@@ -150,6 +144,7 @@ public class EUExRongCloud extends EUExBase {
             /**
              * IMKit SDK调用第二步,建立与服务器的连接
              */
+            final int finalCallbackId = callbackId;
             mRongIMClient = RongIMClient.connect(connectVO.getToken(), new RongIMClient.ConnectCallback() {
 
                 /**
@@ -158,7 +153,7 @@ public class EUExRongCloud extends EUExBase {
                 @Override
                 public void onTokenIncorrect() {
                     resultVO.setResultCode(-1);
-                    cbConnect(resultVO);
+                    cbConnect(resultVO, finalCallbackId);
                 }
 
                 /**
@@ -169,7 +164,7 @@ public class EUExRongCloud extends EUExBase {
                 public void onSuccess(String userid) {
                     resultVO.setUserId(userid);
                     resultVO.setResultCode(0);
-                    cbConnect(resultVO);
+                    cbConnect(resultVO,finalCallbackId);
                 }
 
                 /**
@@ -179,15 +174,19 @@ public class EUExRongCloud extends EUExBase {
                 @Override
                 public void onError(RongIMClient.ErrorCode errorCode) {
                     resultVO.setResultCode(errorCode.getValue());
-                    cbConnect(resultVO);
+                    cbConnect(resultVO,finalCallbackId);
                 }
             });
         }
 
     }
 
-    private void cbConnect(ConnectResultVO resultVO) {
-        callBackJsObject(JsConst.CALLBACK_CONNECT, DataHelper.gson.toJsonTree(resultVO));
+    private void cbConnect(ConnectResultVO resultVO,int callbackId) {
+        if (callbackId!=-1){
+            callbackToJs(callbackId,false,resultVO.getResultCode(),resultVO.getUserId());
+        }else {
+            callBackJsObject(JsConst.CALLBACK_CONNECT, DataHelper.gson.toJsonTree(resultVO));
+        }
     }
 
     public void sendMessage(String[] params) {
@@ -201,28 +200,32 @@ public class EUExRongCloud extends EUExBase {
         }
         String json = params[0];
         SendMessageVO sendMessageVO = DataHelper.gson.fromJson(json, SendMessageVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
         if (sendMessageVO.getObjectName().equals(RC_TXT_MSG)) {
-            sendTextMessage(sendMessageVO);
+            sendTextMessage(sendMessageVO, callbackId);
 
         } else if (sendMessageVO.getObjectName().equals(RC_IMG_MSG)) {
-            sendImgMessage(sendMessageVO);
+            sendImgMessage(sendMessageVO, callbackId);
 
         } else if (sendMessageVO.getObjectName().equals(RC_VC_MSG)) {
-            sendVoiceMessage(sendMessageVO);
+            sendVoiceMessage(sendMessageVO, callbackId);
 
         } else if (sendMessageVO.getObjectName().equals(RC_IMG_TEXT_MSG)) {
-            sendImgTextMessage(sendMessageVO);
+            sendImgTextMessage(sendMessageVO, callbackId);
 
         } else if (sendMessageVO.getObjectName().equals(RC_LBS_MSG)) {
-            sendLBSMessage(sendMessageVO);
+            sendLBSMessage(sendMessageVO, callbackId);
 
         } else if (sendMessageVO.getObjectName().equals(RC_CMD_NTF)) {
-            sendCmdMessage(sendMessageVO);
+            sendCmdMessage(sendMessageVO, callbackId);
 
         }
     }
 
-    private void sendCmdMessage(final SendMessageVO sendMessageVO) {
+    private void sendCmdMessage(final SendMessageVO sendMessageVO, final int callbackId) {
         final MessageResultVO resultVO = new MessageResultVO();
         CommandMessage commandMessage = CommandMessage.obtain(sendMessageVO.getName(), sendMessageVO.getData());
         String localId=sendMessageVO.getLocalId();
@@ -233,14 +236,14 @@ public class EUExRongCloud extends EUExBase {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onSuccess(Integer id) {
                         resultVO.setResultCode(RESULT_CODE_OK);
                         resultVO.setMessageId(id);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 },
                 new RongIMClient.ResultCallback<io.rong.imlib.model.Message>() {
@@ -248,18 +251,24 @@ public class EUExRongCloud extends EUExBase {
                     public void onSuccess(io.rong.imlib.model.Message message) {
                         resultVO.setResultCode(RESULT_CODE_PREPARE);
                         ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 });
     }
 
-    private void sendLBSMessage(final SendMessageVO sendMessageVO) {
+    public void disconnect(String[] params){
+        if (mRongIMClient!=null){
+            mRongIMClient.disconnect();
+        }
+    }
+
+    private void sendLBSMessage(final SendMessageVO sendMessageVO, final int callbackId) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -281,14 +290,14 @@ public class EUExRongCloud extends EUExBase {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onSuccess(Integer id) {
                         resultVO.setResultCode(RESULT_CODE_OK);
                         resultVO.setMessageId(id);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 },
                 new RongIMClient.ResultCallback<io.rong.imlib.model.Message>() {
@@ -296,18 +305,18 @@ public class EUExRongCloud extends EUExBase {
                     public void onSuccess(io.rong.imlib.model.Message message) {
                         resultVO.setResultCode(RESULT_CODE_PREPARE);
                         ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 });
     }
 
-    private void sendImgTextMessage(final SendMessageVO sendMessageVO) {
+    private void sendImgTextMessage(final SendMessageVO sendMessageVO, final int callbackId) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -323,14 +332,14 @@ public class EUExRongCloud extends EUExBase {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onSuccess(Integer id) {
                         resultVO.setResultCode(RESULT_CODE_OK);
                         resultVO.setMessageId(id);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 },
                 new RongIMClient.ResultCallback<io.rong.imlib.model.Message>() {
@@ -338,20 +347,20 @@ public class EUExRongCloud extends EUExBase {
                     public void onSuccess(io.rong.imlib.model.Message message) {
                         resultVO.setResultCode(RESULT_CODE_PREPARE);
                         ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 }
         );
 
     }
 
-    private void sendVoiceMessage(final SendMessageVO sendMessageVO) {
+    private void sendVoiceMessage(final SendMessageVO sendMessageVO, final int callbackId) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -372,14 +381,14 @@ public class EUExRongCloud extends EUExBase {
                     @Override
                     public void onError(Integer integer, RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onSuccess(Integer id) {
                         resultVO.setResultCode(RESULT_CODE_OK);
                         resultVO.setMessageId(id);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 },
                 new RongIMClient.ResultCallback<io.rong.imlib.model.Message>() {
@@ -387,20 +396,20 @@ public class EUExRongCloud extends EUExBase {
                     public void onSuccess(io.rong.imlib.model.Message message) {
                         resultVO.setResultCode(RESULT_CODE_PREPARE);
                         ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 }
         );
 
     }
 
-    private void sendImgMessage(final SendMessageVO sendMessageVO) {
+    private void sendImgMessage(final SendMessageVO sendMessageVO, final int callbackId) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -411,60 +420,50 @@ public class EUExRongCloud extends EUExBase {
             resultVO.setResultCode(RESULT_CODE_FAILED);
         }
         Uri imageUri = Uri.fromFile(imageFile);
-        ImageMessage imageMessage=ImageMessage.obtain(imageUri, imageUri);
+
+        String thumbImg = BUtility.getRealPathWithCopyRes(mBrwView, sendMessageVO.getThumbPath());
+        File thumbFile = new File(thumbImg);
+        if (!thumbFile.exists()) {
+            BDebug.e("file not exist:", thumbImg);
+            resultVO.setResultCode(RESULT_CODE_FAILED);
+        }
+        Uri thumbUri = Uri.fromFile(thumbFile);
+
+        ImageMessage imageMessage=ImageMessage.obtain(thumbUri, imageUri);
         if (!TextUtils.isEmpty(sendMessageVO.getExtra())) {
             imageMessage.setExtra(sendMessageVO.getExtra());
         }
         mRongIMClient.sendMessage(sendMessageVO.getConversationType(),
                 sendMessageVO.getTargetId(),imageMessage
                 , "", "",
-                new RongIMClient.SendImageMessageCallback() {
+                new IRongCallback.ISendMessageCallback(){
+
                     @Override
                     public void onAttached(io.rong.imlib.model.Message message) {
-
+                        BDebug.i("onAttached");
                     }
 
                     @Override
                     public void onError(io.rong.imlib.model.Message message, RongIMClient.ErrorCode errorCode) {
+                        BDebug.i("onError");
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onSuccess(io.rong.imlib.model.Message message) {
+                        BDebug.i("onSuccess");
                         resultVO.setResultCode(RESULT_CODE_OK);
                         resultVO.setMessageId(message.getMessageId());
-                        cbSendMessage(resultVO);
-                    }
-
-                    @Override
-                    public void onProgress(io.rong.imlib.model.Message message, int i) {
-                        resultVO.setResultCode(RESULT_CODE_PROGRESS);
-                        resultVO.setMessageId(message.getMessageId());
-                        resultVO.setProgress(i);
-                        cbSendMessage(resultVO);
-                    }
-
-                }
-                , new RongIMClient.ResultCallback<io.rong.imlib.model.Message>() {
-                    @Override
-                    public void onSuccess(io.rong.imlib.model.Message message) {
-                        resultVO.setResultCode(RESULT_CODE_PREPARE);
-                        ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO);
-                    }
-
-                    @Override
-                    public void onError(RongIMClient.ErrorCode errorCode) {
-                        resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 }
+
         );
 
     }
 
-    private void sendTextMessage(final SendMessageVO sendMessageVO) {
+    private void sendTextMessage(final SendMessageVO sendMessageVO, final int callbackId) {
         final MessageResultVO resultVO = new MessageResultVO();
         String localId=sendMessageVO.getLocalId();
         resultVO.setLocalId(localId);
@@ -482,13 +481,13 @@ public class EUExRongCloud extends EUExBase {
                     public void onSuccess(Integer id) {
                         resultVO.setResultCode(RESULT_CODE_OK);
                         resultVO.setMessageId(id);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onError(Integer id, RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                 },
@@ -497,22 +496,27 @@ public class EUExRongCloud extends EUExBase {
                     public void onSuccess(io.rong.imlib.model.Message message) {
                         resultVO.setResultCode(RESULT_CODE_PREPARE);
                         ModelTranslation.translateMessageVO(resultVO, message);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
                         resultVO.setResultCode(RESULT_CODE_FAILED);
-                        cbSendMessage(resultVO);
+                        cbSendMessage(resultVO,callbackId);
                     }
                 }
         );
     }
 
 
-    private void cbSendMessage(MessageResultVO resultVO) {
-        callBackJsObject(JsConst.CALLBACK_SEND_MESSAGE, DataHelper.gson.toJsonTree(resultVO));
-
+    private void cbSendMessage(MessageResultVO resultVO,int callbackId) {
+        if(callbackId!=-1){
+            callbackToJs(callbackId,resultVO.getResultCode()==0||
+                    resultVO.getResultCode()==3,resultVO.getResultCode(),//准备发送和发送进度后续还要接受回调
+                    resultVO.getMessageId(),resultVO.getProgress());
+        }else{
+            callBackJsObject(JsConst.CALLBACK_SEND_MESSAGE, DataHelper.gson.toJsonTree(resultVO));
+        }
     }
 
     public String getConversationList(String[] params) {
@@ -560,15 +564,28 @@ public class EUExRongCloud extends EUExBase {
         }
         String json = params[0];
         ConversationInputVO inputVO = DataHelper.gson.fromJson(json, ConversationInputVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.removeConversation(inputVO.getConversationType(), inputVO.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                callBackResultCode(JsConst.CALLBACK_REMOVE_CONVERSATION, 0);
+                if (finalCallbackId!=-1){
+                    callbackToJs(finalCallbackId,false,0);
+                }else {
+                    callBackResultCode(JsConst.CALLBACK_REMOVE_CONVERSATION, 0);
+                }
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                callBackResultCode(JsConst.CALLBACK_REMOVE_CONVERSATION, RESULT_CODE_FAILED);
+                if (finalCallbackId!=-1){
+                    callbackToJs(finalCallbackId,false,1);
+                }else {
+                    callBackResultCode(JsConst.CALLBACK_REMOVE_CONVERSATION, RESULT_CODE_FAILED);
+                }
             }
         });
 
@@ -590,15 +607,28 @@ public class EUExRongCloud extends EUExBase {
         }
         String json = params[0];
         ClearConversationsVO inputVO = DataHelper.gson.fromJson(json, ClearConversationsVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId=callbackId;
         mRongIMClient.clearConversations(new RongIMClient.ResultCallback() {
             @Override
             public void onSuccess(Object o) {
-                callBackResultCode(JsConst.CALLBACK_CLEAR_CONVERSATIONS, 0);
+                if (finalCallbackId!=-1){
+                    callbackToJs(finalCallbackId,false,0);
+                }else {
+                    callBackResultCode(JsConst.CALLBACK_CLEAR_CONVERSATIONS, 0);
+                }
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                callBackResultCode(JsConst.CALLBACK_CLEAR_CONVERSATIONS, 2);
+                if (finalCallbackId!=-1){
+                    callbackToJs(finalCallbackId,false,1);
+                }else {
+                    callBackResultCode(JsConst.CALLBACK_CLEAR_CONVERSATIONS, 2);
+                }
             }
         }, inputVO.getConversationTypes());
     }
@@ -609,17 +639,30 @@ public class EUExRongCloud extends EUExBase {
             return;
         }
         String json = params[0];
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
         ConversationInputVO inputVO = DataHelper.gson.fromJson(json, ConversationInputVO.class);
+        final int finalCallbackId = callbackId;
         mRongIMClient.setConversationToTop(inputVO.getConversationType(), inputVO.getTargetId(),
                 inputVO.isTop(), new RongIMClient.ResultCallback<Boolean>() {
                     @Override
                     public void onSuccess(Boolean aBoolean) {
-                        callBackResultCode(JsConst.CALLBACK_SET_CONVERSATION_TO_TOP, 0);
+                        if (finalCallbackId !=-1){
+                            callbackToJs(finalCallbackId,false,0);
+                        }else {
+                            callBackResultCode(JsConst.CALLBACK_SET_CONVERSATION_TO_TOP, 0);
+                        }
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
-                        callBackResultCode(JsConst.CALLBACK_SET_CONVERSATION_TO_TOP, 2);
+                        if (finalCallbackId!=-1){
+                            callbackToJs(finalCallbackId,false,1);
+                        }else {
+                            callBackResultCode(JsConst.CALLBACK_SET_CONVERSATION_TO_TOP, 2);
+                        }
                     }
                 });
     }
@@ -632,19 +675,32 @@ public class EUExRongCloud extends EUExBase {
         }
 
         String json = params[0];
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
         ConversationInputVO inputVO = DataHelper.gson.fromJson(json, ConversationInputVO.class);
+        final int finalCallbackId = callbackId;
         mRongIMClient.getConversationNotificationStatus(inputVO.getConversationType(), inputVO.getTargetId(), new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                statusVO.setResultCode(0);
-                statusVO.setStatus(conversationNotificationStatus.getValue());
-                callBackJsObject(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
-            }
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,0,conversationNotificationStatus.getValue());
+                }else{
+                    statusVO.setResultCode(0);
+                    statusVO.setStatus(conversationNotificationStatus.getValue());
+                    callBackJsObject(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
+                }
+             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                statusVO.setResultCode(2);
-                callBackJsObject(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,errorCode.getValue());
+                }else{
+                    statusVO.setResultCode(2);
+                    callBackJsObject(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
+                }
             }
         });
     }
@@ -657,21 +713,34 @@ public class EUExRongCloud extends EUExBase {
         }
         String json = params[0];
         ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.setConversationNotificationStatus(inputVO.getConversationType(), inputVO.getTargetId(),
                 Conversation.ConversationNotificationStatus.setValue(inputVO.getStatus()), new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
                     @Override
                     public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                        statusVO.setResultCode(0);
-                        statusVO.setStatus(conversationNotificationStatus.getValue());
-                        callBackJsObject(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
-                                (statusVO));
+                        if(finalCallbackId !=-1){
+                            callbackToJs(finalCallbackId,false,0,conversationNotificationStatus.getValue());
+                        }else{
+                            statusVO.setResultCode(0);
+                            statusVO.setStatus(conversationNotificationStatus.getValue());
+                            callBackJsObject(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
+                                    (statusVO));
+                        }
                     }
 
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
-                        statusVO.setResultCode(2);
-                        callBackJsObject(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
+                        if(finalCallbackId !=-1){
+                            callbackToJs(finalCallbackId,false,errorCode.getValue());
+                        }else{
+                            statusVO.setResultCode(2);
+                            callBackJsObject(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
                                 (statusVO));
+                        }
                     }
                 });
      }
@@ -684,20 +753,33 @@ public class EUExRongCloud extends EUExBase {
         String json = params[0];
         final List<MessageResultVO> messageResultVOList=new ArrayList<MessageResultVO>();
         ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.getLatestMessages(inputVO.getConversationType(), inputVO.getTargetId(), inputVO.getCount(), new RongIMClient.ResultCallback<List<io.rong.imlib.model.Message>>() {
             @Override
             public void onSuccess(List<io.rong.imlib.model.Message> messages) {
-                  if (messages!=null){
+                if (messages!=null){
                     for (io.rong.imlib.model.Message message:messages) {
                         messageResultVOList.add(ModelTranslation.translateMessageVO(message));
                     }
                 }
-                callBackJsObject(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
-            }
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,0,DataHelper.gson.toJsonTree(messageResultVOList));
+                }else{
+                    callBackJsObject(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                }
+             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                callBackJsObject(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,errorCode.getValue());
+                }else{
+                    callBackJsObject(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                }
             }
         });
 
@@ -712,6 +794,11 @@ public class EUExRongCloud extends EUExBase {
         String json = params[0];
         final List<MessageResultVO> messageResultVOList=new ArrayList<MessageResultVO>();
         ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.getHistoryMessages(inputVO.getConversationType(), inputVO.getTargetId(), inputVO
                 .getOldestMessageId(), inputVO.getCount(), new RongIMClient.ResultCallback<List<io.rong.imlib.model.Message>>() {
             @Override
@@ -721,13 +808,21 @@ public class EUExRongCloud extends EUExBase {
                         messageResultVOList.add(ModelTranslation.translateMessageVO(message));
                     }
                 }
-                callBackJsObject(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,0,DataHelper.gson.toJsonTree(messageResultVOList));
+                }else{
+                    callBackJsObject(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                }
 
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                callBackJsObject(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,errorCode.getValue());
+                }else{
+                    callBackJsObject(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                }
             }
         });
 
@@ -741,17 +836,30 @@ public class EUExRongCloud extends EUExBase {
         String json = params[0];
         final DeleteMessagesResultVO resultVO=new DeleteMessagesResultVO();
         DeleteMessagesVO deleteMessagesVO=DataHelper.gson.fromJson(json,DeleteMessagesVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.deleteMessages(deleteMessagesVO.getMessageIds(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                resultVO.setResultCode(0);
-                callBackJsObject(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
-            }
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,0);
+                }else{
+                    resultVO.setResultCode(0);
+                    callBackJsObject(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
+                }
+             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                resultVO.setResultCode(2);
-                callBackJsObject(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,errorCode.getValue());
+                }else{
+                    resultVO.setResultCode(2);
+                    callBackJsObject(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
+                }
             }
         });
     }
@@ -764,17 +872,30 @@ public class EUExRongCloud extends EUExBase {
         String json = params[0];
         final DeleteMessagesResultVO resultVO=new DeleteMessagesResultVO();
         ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.clearMessages(inputVO.getConversationType(), inputVO.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                resultVO.setResultCode(0);
-                callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,0);
+                }else{
+                    resultVO.setResultCode(0);
+                    callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
+                }
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                resultVO.setResultCode(2);
-                callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,errorCode.getValue());
+                }else{
+                    resultVO.setResultCode(2);
+                    callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
+                }
             }
         });
 
@@ -790,7 +911,7 @@ public class EUExRongCloud extends EUExBase {
             return -1;
         }
         String json = params[0];
-        ConversationInputVO inputVO=new ConversationInputVO();
+        ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
         return mRongIMClient.getUnreadCount(inputVO.getConversationType(),inputVO.getTargetId());
     }
 
@@ -800,7 +921,7 @@ public class EUExRongCloud extends EUExBase {
             return -1;
         }
         String json = params[0];
-        ConversationInputVO inputVO=new ConversationInputVO();
+        ConversationInputVO inputVO=DataHelper.gson.fromJson(json,ConversationInputVO.class);
         return mRongIMClient.getUnreadCount(inputVO.getConversationTypes());
     }
 
@@ -821,15 +942,29 @@ public class EUExRongCloud extends EUExBase {
             value = 2;
         else if(status.equals("DOWNLOADED"))
             value = 4;
+        int callbackId=-1;
+        if (params.length>1){
+            callbackId= Integer.parseInt(params[1]);
+        }
+        final int finalCallbackId = callbackId;
         mRongIMClient.setMessageReceivedStatus(statusVO.getMessageId(), new io.rong.imlib.model.Message.ReceivedStatus
                 (value), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                callBackJsObject(JsConst.CALLBACK_SET_MESSAGE_RECEIVED_STATUS, "");
+                if(finalCallbackId !=-1){
+                    callbackToJs(finalCallbackId,false,0);
+                }else{
+                    callBackJsObject(JsConst.CALLBACK_SET_MESSAGE_RECEIVED_STATUS, "");
+                }
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                if (finalCallbackId != -1) {
+                    callbackToJs(finalCallbackId, false, errorCode.getValue());
+                } else {
+
+                }
             }
         });
      }

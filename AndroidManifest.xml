@@ -29,68 +29,55 @@
 
         <meta-data
             android:name="RONG_CLOUD_APP_KEY"
-            android:value="bmdehs6pdprts" />
+            android:value="e5t4ouvptdhca" />
 
-    <service
-        android:name="io.rong.imlib.ipc.RongService"
-        android:process=":ipc" >
-    </service>
-    <service android:name="io.rong.imlib.ReConnectService" />
+        <service
+                android:process=":ipc"
+                android:exported="true"
+                android:name="io.rong.imlib.ipc.RongService">
+        </service>
 
-    <receiver android:name="io.rong.imlib.ConnectChangeReceiver" />
-    <receiver android:name="io.rong.imlib.ipc.PushMessageReceiver" >
-        <intent-filter>
-            <action android:name="io.rong.push.message" />
-        </intent-filter>
-    </receiver>
-    <receiver
-        android:name="io.rong.imlib.HeartbeatReceiver"
-        android:process=":ipc" />
+        <service android:name="io.rong.imlib.ReConnectService"/>
+        <receiver android:name="io.rong.imlib.ConnectChangeReceiver"/>
 
-    <service
-        android:name="io.rong.push.PushService"
-        android:process="io.rong.push" > <!-- Waring: The name of the push process can't be changed!!! -->
-        <intent-filter>
-            <category android:name="android.intent.category.DEFAULT" />
+        <receiver android:name="io.rong.imlib.HeartbeatReceiver"
+                  android:process=":ipc"/>
 
-            <action android:name="io.rong.push" />
-        </intent-filter>
-    </service>
-    <service
-        android:name="io.rong.push.CommandService"
-        android:process="io.rong.push" > <!-- Waring: The name of the push process can't be changed!!! -->
-        <intent-filter>
-            <category android:name="android.intent.category.DEFAULT" />
+        <!-- end -->
+        <!--必选： SDK 核心功能-->
+        <service
+                android:name="io.rong.push.core.PushRegistrationService"
+                android:exported="false">
+        </service>
+        <service
+                android:name="io.rong.push.PushService"
+                android:exported="false"
+                android:process="io.rong.push">
+        </service>
 
-            <action android:name="io.rong.command" />
-        </intent-filter>
-    </service>
+        <service
+                android:name="io.rong.push.core.MessageHandleService"
+                android:exported="true">
+        </service>
 
-    <receiver
-        android:name="io.rong.push.PushReceiver"
-        android:process="io.rong.push" > <!-- Waring: The name of the push process can't be changed!!! -->
-        <intent-filter>
-            <action android:name="io.rong.imlib.action.push.heartbeat" />
-        </intent-filter>
-        <intent-filter>
-            <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-        </intent-filter>
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-        </intent-filter>
-        <intent-filter>
-            <action android:name="android.intent.action.USER_PRESENT" />
-            <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-            <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
-        </intent-filter>
-        <intent-filter>
-            <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
-            <data android:scheme="package" />
-        </intent-filter>
-    </receiver>
-
-    <!-- end -->
+        <receiver
+                android:name="io.rong.push.PushReceiver"
+                android:process="io.rong.push">
+            <intent-filter>
+                <action android:name="io.rong.push.intent.action.HEART_BEAT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
 
 
         <activity android:name="org.zywx.wbpalmstar.engine.LoadingActivity"
