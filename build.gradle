@@ -60,6 +60,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 14 //
         applicationId 'org.zywx.wbpalmstar.widgetone.uexRongCloud'
+        multiDexEnabled true
     }
     sourceSets {
         main {

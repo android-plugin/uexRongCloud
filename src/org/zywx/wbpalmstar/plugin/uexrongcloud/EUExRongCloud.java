@@ -8,10 +8,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
-import io.rong.imlib.IRongCallback;
-import io.rong.imlib.RongIMClient;
-import io.rong.imlib.model.Conversation;
-import io.rong.message.*;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.zywx.wbpalmstar.base.BDebug;
@@ -19,11 +16,33 @@ import org.zywx.wbpalmstar.base.BUtility;
 import org.zywx.wbpalmstar.engine.DataHelper;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
-import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.*;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ClearConversationsVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConnectResultVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConnectVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationInputVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationNotificationStatusVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.ConversationVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.DeleteMessagesResultVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.DeleteMessagesVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.GetConversationListResultVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.MessageResultVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.OnMessageReceivedVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.SendMessageVO;
+import org.zywx.wbpalmstar.plugin.uexrongcloud.vo.SetMessageReceivedStatusVO;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.rong.imlib.IRongCallback;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
+import io.rong.message.CommandMessage;
+import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
+import io.rong.message.RichContentMessage;
+import io.rong.message.TextMessage;
+import io.rong.message.VoiceMessage;
 
 public class EUExRongCloud extends EUExBase {
 
@@ -40,15 +59,37 @@ public class EUExRongCloud extends EUExBase {
     public static final int RESULT_CODE_PROGRESS = 3;
 
     private RongIMClient mRongIMClient;
+    private static List<EBrowserView> callbackBrowserViews;//需要回调的EBrowserView
 
     public EUExRongCloud(Context context, EBrowserView eBrowserView) {
         super(context, eBrowserView);
-        registerListeners();
+        if ("root".equals(eBrowserView.getWindowName())){
+            registerCallback(null);
+        }
     }
 
     @Override
     protected boolean clean() {
         return false;
+    }
+
+    public void registerCallback(String[] params){
+        if (callbackBrowserViews==null){
+            callbackBrowserViews=new ArrayList<EBrowserView>();
+        }
+        if (!callbackBrowserViews.contains(mBrwView)){
+            callbackBrowserViews.add(mBrwView);
+        }
+    }
+
+    public void unRegisterCallback(String[] params){
+        if (callbackBrowserViews!=null&&callbackBrowserViews.contains(mBrwView)){
+            callbackBrowserViews.remove(mBrwView);
+        }
+        if (params!=null&&params.length>0&&"-1".equals(params[0])){
+            callbackBrowserViews.clear();
+            callbackBrowserViews=null;
+        }
     }
 
     private void registerListeners() {
@@ -74,13 +115,21 @@ public class EUExRongCloud extends EUExBase {
             ((Activity)mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    callBackJsObject(JsConst.ON_MESSAGE_RECEIVED, DataHelper.gson.toJsonTree(onMessageReceivedVO));
+                    callbackToRegisterViews(JsConst.ON_MESSAGE_RECEIVED, DataHelper.gson.toJsonTree(onMessageReceivedVO));
                 }
             });
             return false;
         }
 
 
+    }
+
+    private void callbackToRegisterViews(String methodName,Object object){
+        if (callbackBrowserViews!=null){
+            for (EBrowserView eBrowserView:callbackBrowserViews){
+                EUExBase.callBackJsObject(eBrowserView,methodName,object);
+            }
+        }
     }
 
     @Override
@@ -109,6 +158,7 @@ public class EUExRongCloud extends EUExBase {
     }
 
     public void init(String[] params) {
+        registerListeners();
         String json = params[0];
         JSONObject jsonResult = new JSONObject();
         try {
@@ -122,7 +172,7 @@ public class EUExRongCloud extends EUExBase {
         if(callbackId!=-1){
             callbackToJs(callbackId,false,0);
         }else{
-            callBackJsObject(JsConst.CALLBACK_INIT, jsonResult);
+            callbackToRegisterViews(JsConst.CALLBACK_INIT, jsonResult);
         }
     }
 
@@ -185,7 +235,7 @@ public class EUExRongCloud extends EUExBase {
         if (callbackId!=-1){
             callbackToJs(callbackId,false,resultVO.getResultCode(),resultVO.getUserId());
         }else {
-            callBackJsObject(JsConst.CALLBACK_CONNECT, DataHelper.gson.toJsonTree(resultVO));
+            callbackToRegisterViews(JsConst.CALLBACK_CONNECT, DataHelper.gson.toJsonTree(resultVO));
         }
     }
 
@@ -515,7 +565,7 @@ public class EUExRongCloud extends EUExBase {
                     resultVO.getResultCode()==3,resultVO.getResultCode(),//准备发送和发送进度后续还要接受回调
                     resultVO.getMessageId(),resultVO.getProgress());
         }else{
-            callBackJsObject(JsConst.CALLBACK_SEND_MESSAGE, DataHelper.gson.toJsonTree(resultVO));
+            callbackToRegisterViews(JsConst.CALLBACK_SEND_MESSAGE, DataHelper.gson.toJsonTree(resultVO));
         }
     }
 
@@ -597,7 +647,7 @@ public class EUExRongCloud extends EUExBase {
             jsonResult.put("resultCode", resultCode);
         } catch (JSONException e) {
         }
-        callBackJsObject(methodName, jsonResult);
+        callbackToRegisterViews(methodName, jsonResult);
     }
 
     public void clearConversations(String[] params) {
@@ -689,7 +739,7 @@ public class EUExRongCloud extends EUExBase {
                 }else{
                     statusVO.setResultCode(0);
                     statusVO.setStatus(conversationNotificationStatus.getValue());
-                    callBackJsObject(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
+                    callbackToRegisterViews(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
                 }
              }
 
@@ -699,7 +749,7 @@ public class EUExRongCloud extends EUExBase {
                     callbackToJs(finalCallbackId,false,errorCode.getValue());
                 }else{
                     statusVO.setResultCode(2);
-                    callBackJsObject(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
+                    callbackToRegisterViews(JsConst.CALLBACK_GET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree(statusVO));
                 }
             }
         });
@@ -727,7 +777,7 @@ public class EUExRongCloud extends EUExBase {
                         }else{
                             statusVO.setResultCode(0);
                             statusVO.setStatus(conversationNotificationStatus.getValue());
-                            callBackJsObject(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
+                            callbackToRegisterViews(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
                                     (statusVO));
                         }
                     }
@@ -738,7 +788,7 @@ public class EUExRongCloud extends EUExBase {
                             callbackToJs(finalCallbackId,false,errorCode.getValue());
                         }else{
                             statusVO.setResultCode(2);
-                            callBackJsObject(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
+                            callbackToRegisterViews(JsConst.CALLBACK_SET_CONVERSATION_NOTIFICATION_STATUS, DataHelper.gson.toJsonTree
                                 (statusVO));
                         }
                     }
@@ -769,7 +819,7 @@ public class EUExRongCloud extends EUExBase {
                 if(finalCallbackId !=-1){
                     callbackToJs(finalCallbackId,false,0,DataHelper.gson.toJsonTree(messageResultVOList));
                 }else{
-                    callBackJsObject(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                    callbackToRegisterViews(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
                 }
              }
 
@@ -778,7 +828,7 @@ public class EUExRongCloud extends EUExBase {
                 if(finalCallbackId !=-1){
                     callbackToJs(finalCallbackId,false,errorCode.getValue());
                 }else{
-                    callBackJsObject(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                    callbackToRegisterViews(JsConst.CALLBACK_GET_LATEST_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
                 }
             }
         });
@@ -811,7 +861,7 @@ public class EUExRongCloud extends EUExBase {
                 if(finalCallbackId !=-1){
                     callbackToJs(finalCallbackId,false,0,DataHelper.gson.toJsonTree(messageResultVOList));
                 }else{
-                    callBackJsObject(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                    callbackToRegisterViews(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
                 }
 
             }
@@ -821,7 +871,7 @@ public class EUExRongCloud extends EUExBase {
                 if(finalCallbackId !=-1){
                     callbackToJs(finalCallbackId,false,errorCode.getValue());
                 }else{
-                    callBackJsObject(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
+                    callbackToRegisterViews(JsConst.CALLBACK_GET_HISTORY_MESSAGES, DataHelper.gson.toJsonTree(messageResultVOList));
                 }
             }
         });
@@ -848,7 +898,7 @@ public class EUExRongCloud extends EUExBase {
                     callbackToJs(finalCallbackId,false,0);
                 }else{
                     resultVO.setResultCode(0);
-                    callBackJsObject(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
+                    callbackToRegisterViews(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
                 }
              }
 
@@ -858,7 +908,7 @@ public class EUExRongCloud extends EUExBase {
                     callbackToJs(finalCallbackId,false,errorCode.getValue());
                 }else{
                     resultVO.setResultCode(2);
-                    callBackJsObject(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
+                    callbackToRegisterViews(JsConst.CALLBACK_DELETE_MESSAGES, DataHelper.gson.toJsonTree(resultVO));
                 }
             }
         });
@@ -884,7 +934,7 @@ public class EUExRongCloud extends EUExBase {
                     callbackToJs(finalCallbackId,false,0);
                 }else{
                     resultVO.setResultCode(0);
-                    callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
+                    callbackToRegisterViews(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
                 }
             }
 
@@ -894,7 +944,7 @@ public class EUExRongCloud extends EUExBase {
                     callbackToJs(finalCallbackId,false,errorCode.getValue());
                 }else{
                     resultVO.setResultCode(2);
-                    callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
+                    callbackToRegisterViews(JsConst.CALLBACK_CLEAR_MESSAGES,DataHelper.gson.toJsonTree(resultVO));
                 }
             }
         });
@@ -954,7 +1004,7 @@ public class EUExRongCloud extends EUExBase {
                 if(finalCallbackId !=-1){
                     callbackToJs(finalCallbackId,false,0);
                 }else{
-                    callBackJsObject(JsConst.CALLBACK_SET_MESSAGE_RECEIVED_STATUS, "");
+                    callbackToRegisterViews(JsConst.CALLBACK_SET_MESSAGE_RECEIVED_STATUS, "");
                 }
             }
 
@@ -979,7 +1029,7 @@ public class EUExRongCloud extends EUExBase {
         mRongIMClient.clearMessagesUnreadStatus(inputVO.getConversationType(), inputVO.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                callBackJsObject(JsConst.CALLBACK_CLEAR_MESSAGES_UNREAD_STATUS, "");
+                callbackToRegisterViews(JsConst.CALLBACK_CLEAR_MESSAGES_UNREAD_STATUS, "");
             }
 
             @Override
